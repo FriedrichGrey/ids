@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:ids="http://standards.buildingsmart.org/IDS/ids.xsd"
+            targetNamespace="http://standards.buildingsmart.org/IDS/ids.xsd"
+            elementFormDefault="qualified"
+            version="0.9.4"
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+    <xs:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="https://www.w3.org/2001/XMLSchema.xsd"/>
+
+
+    <!--This tells JAXB what package to create the Java classes in-->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <jaxb:schemaBindings>
+                <jaxb:package name="de.buildingsmart.ids"/>
+            </jaxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <!--Original Ids Content-->
+    <xsd:element name="ids">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="info">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="title" type="xsd:string"/>
+                            <xsd:element name="copyright" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="version" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="author" minOccurs="0">
+                                <xsd:simpleType>
+                                    <xsd:restriction base="xsd:string">
+                                        <xsd:pattern value="[^@]+@[^\.]+\..+"/>
+                                    </xsd:restriction>
+                                </xsd:simpleType>
+                            </xsd:element>
+                            <xsd:element name="date" type="xsd:date" minOccurs="0"/>
+                            <xsd:element name="purpose" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="milestone" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="specifications">
+                    <xsd:complexType>
+                        <xsd:complexContent>
+                            <xsd:extension base="ids:specificationsType"/>
+                        </xsd:complexContent>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:complexType name="entityType">
+        <xsd:sequence>
+            <xsd:element name="name" type="ids:idsValue"/>
+            <xsd:element name="predefinedType" type="ids:idsValue" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="idsValue">
+        <xsd:choice minOccurs="1">
+            <!-- place for potential additional rules for idsValue -->
+            <xsd:element name="simpleValue" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element ref="xs:restriction" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <xsd:complexType name="classificationType">
+        <xsd:sequence>
+            <xsd:element name="value" type="ids:idsValue" minOccurs="0"/>
+            <xsd:element name="system" type="ids:idsValue" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="partOfType">
+        <xsd:sequence>
+            <xsd:element name="entity" type="ids:entityType" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="relation" type="ids:relations" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="applicabilityType">
+        <xsd:sequence>
+            <xsd:element name="entity" type="ids:entityType" minOccurs="0"/>
+            <xsd:element name="partOf" type="ids:partOfType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="classification" type="ids:classificationType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="attribute" type="ids:attributeType" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:propertyType"/>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="material" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:materialType"/>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="propertyType">
+        <xsd:sequence>
+            <xsd:element name="propertySet" type="ids:idsValue"/>
+            <xsd:element name="name" type="ids:idsValue"/>
+            <xsd:element name="value" type="ids:idsValue" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="measure" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>This is the name of an IFC Defined Types. See the documentation and default units on https://github.com/buildingSMART/IDS/blob/master/Documentation/units.md</xsd:documentation>
+            </xsd:annotation>
+            <!-- there is a request to make this an ids:value -->
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="attributeType">
+        <xsd:sequence>
+            <xsd:element name="name" type="ids:idsValue"/>
+            <xsd:element name="value" type="ids:idsValue" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="materialType">
+        <xsd:sequence>
+            <xsd:element name="value" type="ids:idsValue" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="requirementsType">
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="entity" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Make sure 'Name' value of requirements entity is the same as the 'applicability' node, or a wildcard (inclusive pattern).</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:entityType"/>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="partOf" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:partOfType">
+                            <xsd:attributeGroup ref="xs:occurs"/>
+                            <xsd:attribute name="instructions" type="xsd:string" use="optional">
+                                <xsd:annotation>
+                                    <xsd:documentation>Author of the IDS can leave instructions for the authors of the IFC. This text could/should be displayed in the BIM/IFC authoring tool.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="classification" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:classificationType">
+                            <xsd:attribute name="uri" type="xsd:anyURI" use="optional"/>
+                            <xsd:attributeGroup ref="xs:occurs"/>
+                            <xsd:attribute name="instructions" type="xsd:string" use="optional">
+                                <xsd:annotation>
+                                    <xsd:documentation>Author of the IDS can leave instructions for the authors of the IFC. This text could/should be displayed in the BIM/IFC authoring tool.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:attributeType">
+                            <xsd:attribute name="instructions" type="xsd:string" use="optional">
+                                <xsd:annotation>
+                                    <xsd:documentation>Author of the IDS can leave instructions for the authors of the IFC. This text could/should be displayed in the BIM/IFC authoring tool.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:propertyType">
+                            <xsd:attribute name="uri" type="xsd:anyURI" use="optional"/>
+                            <xsd:attributeGroup ref="xs:occurs"/>
+                            <xsd:attribute name="instructions" type="xsd:string" use="optional">
+                                <xsd:annotation>
+                                    <xsd:documentation>Author of the IDS can leave instructions for the authors of the IFC. This text could/should be displayed in the BIM/IFC authoring tool.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="material" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:materialType">
+                            <xsd:attribute name="uri" type="xsd:anyURI" use="optional"/>
+                            <xsd:attributeGroup ref="xs:occurs"/>
+                            <xsd:attribute name="instructions" type="xsd:string" use="optional">
+                                <xsd:annotation>
+                                    <xsd:documentation>Author of the IDS can leave instructions for the authors of the IFC. This text could/should be displayed in the BIM/IFC authoring tool.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:attribute>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="specificationType">
+        <xsd:sequence>
+            <xsd:element name="applicability" type="ids:applicabilityType"/>
+            <xsd:element name="requirements" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="ids:requirementsType">
+                            <xsd:attribute name="description" type="xsd:string" use="optional"/>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attributeGroup ref="xs:occurs"/>
+        <xsd:attribute name="ifcVersion" use="required">
+            <xsd:simpleType>
+                <xsd:list>
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="IFC2X3"/>
+                            <xsd:enumeration value="IFC4"/>
+                            <xsd:enumeration value="IFC4X3"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:list>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="identifier" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>Author of the IDS can provide an identifier to the IDS. Beware: this cannot be enforced/assumed as (global) unique.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="description" type="xsd:string" use="optional"/>
+        <xsd:attribute name="instructions" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Author of the IDS can leave instructions for the authors of the IFC. This text could/should be displayed in the BIM/IFC authoring tool.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="specificationsType">
+        <xsd:sequence>
+            <xsd:element name="specification" type="ids:specificationType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="relations">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="IfcRelAggregates"/>
+            <xsd:enumeration value="IfcRelAssignsToGroup"/>
+            <xsd:enumeration value="IfcRelContainedInSpatialStructure"/>
+            <xsd:enumeration value="IfcRelNests"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>
